@@ -21,6 +21,7 @@ let isSubmitting = false;
 
 // Elementos do DOM
 const floatingChatBtn = document.getElementById("floatingChatBtn");
+const floatingUnreadBadge = document.getElementById("floatingUnreadBadge");
 const btnOpenChatFromCard = document.getElementById("btnOpenChatFromCard");
 const chatDrawer = document.getElementById("chatDrawer");
 const chatDrawerBackdrop = document.getElementById("chatDrawerBackdrop");
@@ -154,6 +155,9 @@ function setupEventListeners() {
 }
 
 function openChatDrawer() {
+  if (floatingUnreadBadge) {
+    floatingUnreadBadge.classList.add("hidden");
+  }
   if (chatDrawer && chatDrawerBackdrop) {
     chatDrawerBackdrop.classList.remove("hidden");
     chatDrawer.classList.remove("hidden");
@@ -331,9 +335,13 @@ async function fetchMessagesFromServer() {
         if (lastMsg.remetente === "Cleiton" && (!prevLastMsg || prevLastMsg.id !== lastMsg.id)) {
           playReceiveSound();
           showToast("Cleiton M. respondeu!");
-          // Se o drawer estiver fechado, destacar o botão
+          // Se o drawer estiver fechado, mostrar o badge vermelho com número de novas mensagens
           if (chatDrawer && chatDrawer.classList.contains("hidden")) {
-            floatingChatBtn.style.animation = "pulseDot 1s infinite";
+            if (floatingUnreadBadge) {
+              const unreadCleiton = currentMessages.filter(m => m.remetente === "Cleiton").length;
+              floatingUnreadBadge.textContent = unreadCleiton || 1;
+              floatingUnreadBadge.classList.remove("hidden");
+            }
           }
         }
       }

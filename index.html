@@ -105,16 +105,9 @@
         <span class="insta-arrow">→</span>
       </a>
 
-      <!-- Botão de Ação Principal: Falar com Cleiton -->
-      <button type="button" id="btnOpenChatFromCard" class="primary-chat-trigger-btn">
-        <span class="trigger-icon">💬</span>
-        <span class="trigger-text">Falar com o Cleiton Agora</span>
-        <span class="trigger-badge">Online</span>
-      </button>
-
     </main>
 
-    <!-- Rodapé: Obrigado Centralizado e Grande (Sem Colisão) -->
+    <!-- Rodapé: Obrigado Centralizado e Limpo -->
     <footer class="hero-footer">
       <div class="thanks-row">
         <div class="doodle-bursts-small" aria-hidden="true">
@@ -131,12 +124,14 @@
   </div>
 
   <!-- ========================================================================
-       BALÃO FLUTUANTE DE CHAT (FAB NO CANTO INFERIOR DIREITO, NÃO TAMPA NADA)
+       BALÃO FLUTUANTE DE CHAT (COM TEXTO, BADGE DE NOVA MENSAGEM E INDICAÇÃO DE CLIQUE)
        ======================================================================== -->
   <div class="floating-chat-container">
-    <button type="button" id="floatingChatBtn" class="floating-chat-fab" aria-label="Abrir conversa com Cleiton" title="Falar com Cleiton">
+    <button type="button" id="floatingChatBtn" class="floating-chat-pill" aria-label="Falar com o Cleiton agora" title="Clique para enviar uma mensagem">
+      <span class="floating-unread-badge" id="floatingUnreadBadge" aria-label="1 nova mensagem">1</span>
       <span class="floating-fab-icon">💬</span>
-      <span class="floating-fab-status"></span>
+      <span class="floating-fab-text">Falar com o Cleiton agora</span>
+      <span class="floating-click-hint">Clique aqui 👆</span>
     </button>
   </div>
 

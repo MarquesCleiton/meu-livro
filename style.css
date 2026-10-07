@@ -84,11 +84,11 @@ html, body {
   max-width: 480px;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 16px 16px 20px;
+  padding: 16px 16px 90px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
 }
 
 /* ==========================================================================
@@ -327,49 +327,11 @@ html, body {
   font-weight: 900;
 }
 
-/* Botão Central de Abrir Chat */
-.primary-chat-trigger-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background-color: var(--color-neon-green);
-  color: var(--color-dark-green);
-  font-family: var(--font-display);
-  font-size: 1.08rem;
-  font-weight: 900;
-  padding: 14px 18px;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  box-shadow: var(--shadow-neon);
-  transition: var(--transition-smooth);
-}
-
-.primary-chat-trigger-btn:hover {
-  background-color: var(--color-neon-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(56, 229, 77, 0.55);
-}
-
-.trigger-icon {
-  font-size: 1.2rem;
-}
-
-.trigger-badge {
-  background: var(--color-dark-green);
-  color: var(--color-neon-green);
-  font-size: 0.72rem;
-  font-weight: 800;
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
-}
-
 /* ==========================================================================
-   RODAPÉ (OBRIGADO CENTRALIZADO E GRANDE)
+   RODAPÉ (OBRIGADO CENTRALIZADO E COM DESTAQUE)
    ========================================================================== */
 .hero-footer {
-  margin: 6px 0 10px;
+  margin: 10px 0 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -385,7 +347,7 @@ html, body {
 
 .thanks-text {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 8vw, 3rem);
+  font-size: clamp(2rem, 8.5vw, 3.1rem);
   font-weight: 900;
   color: var(--color-dark-green);
   transform: rotate(-1.5deg);
@@ -422,34 +384,104 @@ html, body {
 }
 
 /* ==========================================================================
-   BALÃO FLUTUANTE DE CHAT (FAB - REDONDO NO CANTO, NUNCA TAMPANDO O OBRIGADO)
+   BALÃO FLUTUANTE DE CHAT (COM TEXTO, BADGE DE NOTIFICAÇÃO E CLIQUE AQUI)
    ========================================================================== */
 .floating-chat-container {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 90;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 440px;
+  z-index: 95;
+  display: flex;
+  justify-content: center;
 }
 
-.floating-chat-fab {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: var(--color-dark-green);
-  border: 3px solid var(--color-neon-green);
-  color: #ffffff;
+.floating-chat-pill {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 10px;
+  background-color: var(--color-dark-green);
+  color: #ffffff;
+  border: 2.5px solid var(--color-neon-green);
+  padding: 12px 18px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  box-shadow: var(--shadow-fab);
+  box-shadow: 0 10px 30px rgba(12, 29, 19, 0.45);
   position: relative;
   transition: var(--transition-smooth);
 }
 
-.floating-chat-fab:hover {
-  transform: scale(1.08) translateY(-3px);
+.floating-chat-pill:hover {
+  transform: scale(1.02) translateY(-2px);
   background-color: var(--color-deep-forest);
+  box-shadow: 0 14px 35px rgba(56, 229, 77, 0.4);
+}
+
+.floating-unread-badge {
+  position: absolute;
+  top: -11px;
+  right: 18px;
+  background: #ef4444;
+  color: #ffffff;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.82rem;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.6);
+  animation: bounceBadge 2s infinite ease-in-out;
+}
+
+.floating-unread-badge.hidden {
+  display: none !important;
+}
+
+.floating-fab-icon {
+  font-size: 1.35rem;
+}
+
+.floating-fab-text {
+  flex: 1;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: #ffffff;
+}
+
+.floating-click-hint {
+  background-color: var(--color-neon-green);
+  color: var(--color-dark-green);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  animation: pulseHint 1.8s infinite;
+}
+
+@keyframes bounceBadge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px) scale(1.15); }
+}
+
+@keyframes pulseHint {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); box-shadow: 0 0 10px var(--color-neon-green); }
 }
 
 .floating-fab-icon {
