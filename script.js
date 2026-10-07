@@ -5,7 +5,7 @@
  */
 
 // URL da Implantação Web App do Google Apps Script do Cleiton
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzf-ppjcGqHq7A3XsltUlWJZJ5hs9CXd1323N85Q9Tui5OkX-suZ3ageIOwal6UjM_X-A/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-cxADLboWj0K3ouC8qv6RyPUazl4Av99KMKVL1dYvTaaxRQnb9oTiPxEQNuBL5IuoxA/exec";
 
 // Chaves do LocalStorage
 const STORAGE_TOKEN_KEY = "cleiton_livro_token";
