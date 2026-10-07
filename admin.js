@@ -79,7 +79,9 @@ async function checkAuth() {
 function showLoginScreen(errorMsg = "") {
   sessionStorage.removeItem(STORAGE_ADMIN_AUTH);
   loginOverlay.classList.remove("hidden");
+  loginOverlay.style.display = "flex";
   adminApp.classList.add("hidden");
+  adminApp.style.display = "none";
   if (btnAdminLogin) {
     btnAdminLogin.disabled = false;
     btnAdminLogin.textContent = "Acessar Painel";
@@ -134,7 +136,9 @@ async function verifyAndUnlock(password, isAutoLogin = false) {
 function unlockAdmin() {
   isAuthenticated = true;
   loginOverlay.classList.add("hidden");
+  loginOverlay.style.display = "none";
   adminApp.classList.remove("hidden");
+  adminApp.style.display = "flex";
 
   // Iniciar atualização periódica a cada 10s
   if (!refreshInterval) {
