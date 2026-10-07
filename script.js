@@ -5,7 +5,7 @@
  */
 
 // URL da Implantação Web App do Google Apps Script do Cleiton
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-cxADLboWj0K3ouC8qv6RyPUazl4Av99KMKVL1dYvTaaxRQnb9oTiPxEQNuBL5IuoxA/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw88AuRZ23bxGzTWsvcIpVPfPcMo-xzxG4_fbTCmnyV_DrS_vvJpg9nIJym4LapNABJeA/exec";
 
 // Chaves do LocalStorage
 const STORAGE_TOKEN_KEY = "cleiton_livro_token";
@@ -86,6 +86,37 @@ function initSession() {
 }
 
 /**
+ * Detecta o tipo de dispositivo simplificado do visitante
+ */
+function getDeviceInfo() {
+  const ua = navigator.userAgent || "";
+  if (/iphone/i.test(ua)) return "iPhone (iOS)";
+  if (/ipad/i.test(ua)) return "iPad (iOS)";
+  if (/android/i.test(ua)) return "Android";
+  if (/windows/i.test(ua)) return "Windows PC";
+  if (/macintosh|mac os x/i.test(ua)) return "Mac";
+  if (/linux/i.test(ua)) return "Linux";
+  return "Outro";
+}
+
+/**
+ * Identifica a origem do acesso (parâmetro ?src= ou referrer ou padrão QR Code)
+ */
+function getAccessOrigin() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const src = urlParams.get("src") || urlParams.get("origem") || urlParams.get("utm_source");
+    if (src) return src;
+    if (document.referrer) {
+      if (document.referrer.includes("instagram")) return "Instagram";
+      if (document.referrer.includes("google")) return "Google";
+      return "Link Externo";
+    }
+  } catch (e) {}
+  return "QR Code Folheto";
+}
+
+/**
  * Envia um ping para registrar o acesso do visitante no Google Sheets
  */
 async function pingVisitor() {
@@ -94,7 +125,10 @@ async function pingVisitor() {
   try {
     const savedName = localStorage.getItem(STORAGE_USER_NAME) || "";
     const savedPhone = localStorage.getItem(STORAGE_USER_PHONE) || "";
-    const url = `${GOOGLE_SCRIPT_URL}?action=ping&token=${encodeURIComponent(currentToken)}&nome=${encodeURIComponent(savedName)}&contato=${encodeURIComponent(savedPhone)}`;
+    const dispositivo = getDeviceInfo();
+    const origem = getAccessOrigin();
+
+    const url = `${GOOGLE_SCRIPT_URL}?action=ping&token=${encodeURIComponent(currentToken)}&nome=${encodeURIComponent(savedName)}&contato=${encodeURIComponent(savedPhone)}&dispositivo=${encodeURIComponent(dispositivo)}&origem=${encodeURIComponent(origem)}`;
     
     await fetch(url, { method: "GET", mode: "no-cors" });
   } catch (err) {

@@ -76,8 +76,51 @@ Abra os arquivos abaixo e cole o URL copiado entre as aspas:
 ## 💡 Como Funciona o Chat e as Respostas
 
 - **Quando alguém abre a página**: Um token anônimo é gravado no celular da pessoa. Se ela voltar dias depois, o histórico continua lá.
-- **Métricas no Painel Admin**: Você vê quantas pessoas acessaram o site mesmo antes de mandarem mensagem.
+- **Registro Detalhado de Acessos**: Cada vez que alguém abre o QR Code, um carimbo é registrado na aba **`Acessos`** com data, horário exato, hora do dia (0h-23h), dia da semana, aparelho/sistema (Android, iPhone, etc.) e tipo (1º acesso ou retorno).
+- **Métricas no Painel Admin (`admin.html`)**:
+  - **Aba "Mensagens & Conversas"**: Atendimento estilo WhatsApp Web e botão de resposta direta.
+  - **Aba "Planilha & Métricas de Acessos"**:
+    * Gráfico interativo de 24 horas para ver os horários de maior pico de leituras.
+    * Ranking de acessos por pessoa (quem mais abriu o link do livro).
+    * Estatísticas de aparelhos (% celular vs desktop) e origens.
+    * Tabela estilo planilha com filtros (Hoje, Ontem, 7 dias), busca e botão de **Exportar para Excel / CSV**.
+    * Atalho direto para a Planilha Google Sheets.
 - **Para Responder uma Pessoa**:
   - Opção 1: Abra o painel `admin.html`, clique no visitante e responda pela caixa de texto. O visitante recebe em tempo real!
   - Opção 2: Clique no botão verde "Chamar no WhatsApp" no painel para conversar diretamente pelo aplicativo.
   - Opção 3: Digite sua resposta diretamente na aba `Mensagens` do Google Sheets, adicionando uma linha com `Remetente: Cleiton` e o `Token` do contato.
+
+---
+
+## 📊 Estrutura das Abas na Planilha Google
+
+A planilha agora conta com 3 abas organizadas:
+
+1. **`Acessos`** *(Nova)*: Log individual e contínuo de cada leitura do QR code.
+   - Colunas: `ID Acesso`, `Data/Hora`, `Data`, `Horário`, `Hora do Dia`, `Dia da Semana`, `Token`, `Nome`, `Contato`, `Dispositivo`, `Origem`, `Nº Acesso da Pessoa`, `Tipo`.
+2. **`Visitantes`**: Sumário consolidado de cada pessoa (com data do 1º e do último acesso, total de visitas acumuladas e dados de contato).
+3. **`Mensagens`**: Histórico de mensagens trocadas no chat 1-a-1 entre Cleiton e os leitores.
+
+---
+
+## 🚀 Sugestões e Dicas Estratégicas para o Cleiton
+
+1. **QR Codes Segmentados por Local de Entrega (`?src=...`)**:
+   - Você pode gerar QR Codes com parâmetros diferentes para saber onde o folheto foi lido:
+     - Folheto na caixa do livro: `https://seu-usuario.github.io/meu-livro/?src=folheto_caixa`
+     - Folheto deixado com a portaria/vizinho: `https://seu-usuario.github.io/meu-livro/?src=folheto_portaria`
+     - Folheto colado na porta: `https://seu-usuario.github.io/meu-livro/?src=folheto_porta`
+   - O painel identificará a origem exata no gráfico e na planilha!
+
+2. **Horário de Pico de Leitura**:
+   - Acompanhe o gráfico de 24h no painel. O horário de pico indica quando os vizinhos/moradores costumam recolher correspondências (geralmente entre 18h e 20h). Ficar atento nesse horário aumenta muito a velocidade de contato!
+
+3. **Notificação Instantânea no Telegram (Sem Custos)**:
+   - É possível adicionar um webhook de Bot do Telegram no `google-apps-script.js` para que o seu celular apite no exato segundo em que alguém escanear o QR Code pela primeira vez.
+
+4. **Fórmula Rápida no Google Sheets para Acessos por Hora**:
+   - Caso queira visualizar direto no app Google Planilhas do celular, crie uma aba nova e cole a fórmula:
+     ```excel
+     =QUERY(Acessos!A:M; "SELECT E, COUNT(A) WHERE E IS NOT NULL GROUP BY E ORDER BY E LABEL E 'Hora do Dia', COUNT(A) 'Total de Acessos'"; 1)
+     ```
+

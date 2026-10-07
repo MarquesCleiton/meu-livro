@@ -82,151 +82,376 @@
         </div>
       </div>
 
-      <!-- CARDS DE MÉTRICAS (KPIs) -->
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-icon-wrap bg-green-subtle">
-            👥
-          </div>
-          <div class="kpi-data">
-            <span class="kpi-label">Pessoas que Acessaram</span>
-            <strong class="kpi-value" id="kpiTotalVisitors">0</strong>
-            <span class="kpi-detail">Visitantes únicos detectados</span>
-          </div>
-        </div>
+      <!-- NAVEGAÇÃO PRINCIPAL DO PAINEL (ABAS) -->
+      <nav class="admin-main-nav" aria-label="Navegação do Painel">
+        <button type="button" class="main-nav-tab active" id="tabNavChats" data-view="chats">
+          <span class="tab-icon">💬</span>
+          <span class="tab-title">Mensagens & Conversas</span>
+          <span class="tab-badge badge-pending hidden" id="navBadgePending">0</span>
+        </button>
+        <button type="button" class="main-nav-tab" id="tabNavAccesses" data-view="accesses">
+          <span class="tab-icon">📊</span>
+          <span class="tab-title">Planilha & Métricas de Acessos</span>
+          <span class="tab-badge badge-accent" id="navBadgeAccesses">0</span>
+        </button>
+      </nav>
 
-        <div class="kpi-card">
-          <div class="kpi-icon-wrap bg-blue-subtle">
-            💬
+      <!-- ================================================================== -->
+      <!-- ABA 1: MENSAGENS & CONVERSAS                                       -->
+      <!-- ================================================================== -->
+      <div id="chatsViewSection">
+        <!-- CARDS DE MÉTRICAS (KPIs) -->
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-green-subtle">
+              👥
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Pessoas que Acessaram</span>
+              <strong class="kpi-value" id="kpiTotalVisitors">0</strong>
+              <span class="kpi-detail">Visitantes únicos detectados</span>
+            </div>
           </div>
-          <div class="kpi-data">
-            <span class="kpi-label">Conversas Iniciadas</span>
-            <strong class="kpi-value" id="kpiTotalChats">0</strong>
-            <span class="kpi-detail">Contatos que enviaram mensagem</span>
-          </div>
-        </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon-wrap bg-purple-subtle">
-            📩
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-blue-subtle">
+              💬
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Conversas Iniciadas</span>
+              <strong class="kpi-value" id="kpiTotalChats">0</strong>
+              <span class="kpi-detail">Contatos que enviaram mensagem</span>
+            </div>
           </div>
-          <div class="kpi-data">
-            <span class="kpi-label">Total de Mensagens</span>
-            <strong class="kpi-value" id="kpiTotalMessages">0</strong>
-            <span class="kpi-detail">Entre visitantes e você</span>
-          </div>
-        </div>
 
-        <div class="kpi-card highlight-pending" id="kpiPendingCard">
-          <div class="kpi-icon-wrap bg-orange-subtle">
-            🔔
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-purple-subtle">
+              📩
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Total de Mensagens</span>
+              <strong class="kpi-value" id="kpiTotalMessages">0</strong>
+              <span class="kpi-detail">Entre visitantes e você</span>
+            </div>
           </div>
-          <div class="kpi-data">
-            <span class="kpi-label">Aguardando Resposta</span>
-            <strong class="kpi-value" id="kpiPendingMessages">0</strong>
-            <span class="kpi-detail" id="kpiPendingDetail">Tudo em dia!</span>
+
+          <div class="kpi-card highlight-pending" id="kpiPendingCard">
+            <div class="kpi-icon-wrap bg-orange-subtle">
+              🔔
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Aguardando Resposta</span>
+              <strong class="kpi-value" id="kpiPendingMessages">0</strong>
+              <span class="kpi-detail" id="kpiPendingDetail">Tudo em dia!</span>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- ÁREA DE GESTÃO DE CONVERSAS (INBOX + CHAT ATIVO) -->
-      <section class="inbox-layout-wrapper" id="inboxLayoutWrapper">
+        <!-- ÁREA DE GESTÃO DE CONVERSAS (INBOX + CHAT ATIVO) -->
+        <section class="inbox-layout-wrapper" id="inboxLayoutWrapper">
 
-        <!-- Coluna Esquerda: Lista de Conversas -->
-        <div class="inbox-sidebar" id="inboxSidebar">
-          <div class="sidebar-header">
-            <div class="search-box">
+          <!-- Coluna Esquerda: Lista de Conversas -->
+          <div class="inbox-sidebar" id="inboxSidebar">
+            <div class="sidebar-header">
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar por nome ou telefone...">
+              </div>
+
+              <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">Todos (<span id="countTabAll">0</span>)</button>
+                <button class="filter-tab" data-filter="pending">Aguardando (<span id="countTabPending">0</span>)</button>
+                <button class="filter-tab" data-filter="scanned">Só Acessos (<span id="countTabScanned">0</span>)</button>
+              </div>
+            </div>
+
+            <div class="conversations-scroll-list" id="conversationsList">
+              <!-- Conversas geradas dinamicamente via admin.js -->
+              <div class="inbox-loading">Carregando contatos...</div>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Conversa Ativa Selecionada -->
+          <div class="chat-viewer-panel" id="chatViewerPanel">
+
+            <!-- Estado Sem Seleção -->
+            <div id="emptyChatState" class="empty-chat-state">
+              <div class="empty-icon">💬</div>
+              <h3>Nenhuma conversa selecionada</h3>
+              <p>Selecione um contato na lista ao lado para ver o histórico e responder.</p>
+            </div>
+
+            <!-- Estado Com Conversa Ativa -->
+            <div id="activeChatState" class="active-chat-state hidden">
+              <!-- Header do Chat Selecionado -->
+              <div class="active-chat-header">
+                <!-- Botão Voltar (Visível no Celular) -->
+                <button type="button" id="btnBackToInbox" class="btn-back-inbox" aria-label="Voltar para a lista">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                  </svg>
+                  <span>Voltar</span>
+                </button>
+
+                <div class="contact-details">
+                  <div class="contact-avatar-large" id="activeContactAvatar">JD</div>
+                  <div class="contact-meta">
+                    <div class="name-row">
+                      <h3 id="activeContactName">Nome do Visitante</h3>
+                      <span class="status-pill" id="activeContactStatus">Aguardando</span>
+                    </div>
+                    <div class="contact-sub-row">
+                      <span id="activeContactPhone">Sem telefone</span>
+                      <span class="bullet">•</span>
+                      <span id="activeContactVisits">1 acesso</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="contact-actions">
+                  <a id="btnCallWhatsapp" href="#" target="_blank" class="action-btn-whatsapp" title="Abrir conversa no WhatsApp Web / App">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.983.541 1.879.82 2.791.82 3.181 0 5.767-2.586 5.767-5.766.001-3.181-2.586-5.766-5.767-5.766zm0-2.172c4.385 0 7.943 3.559 7.943 7.938 0 4.38-3.558 7.938-7.943 7.938-1.343 0-2.617-.338-3.738-.934l-4.293 1.124 1.146-4.186c-.672-1.182-1.058-2.545-1.058-3.942 0-4.379 3.558-7.938 7.943-7.938z"/>
+                    </svg>
+                    Chamar no WhatsApp
+                  </a>
+                </div>
+              </div>
+
+              <!-- Janela de Mensagens do Chat -->
+              <div class="active-chat-messages" id="activeChatMessages">
+                <!-- Mensagens renderizadas dinamicamente -->
+              </div>
+
+              <!-- Caixa de Resposta do Cleiton -->
+              <form id="adminReplyForm" class="admin-reply-box">
+                <div class="reply-textarea-wrap">
+                  <textarea id="adminReplyText" rows="2" placeholder="Escreva sua resposta para o visitante... (Pressione Ctrl+Enter para enviar)" required></textarea>
+                </div>
+                <button type="submit" id="btnAdminSendReply" class="btn-reply-send">
+                  <span>Responder como Cleiton</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </form>
+            </div>
+
+          </div>
+
+        </section>
+      </div>
+
+      <!-- ================================================================== -->
+      <!-- ABA 2: PLANILHA & MÉTRICAS DE ACESSOS                              -->
+      <!-- ================================================================== -->
+      <div id="accessesViewSection" class="access-view-section hidden">
+
+        <!-- CARDS DE MÉTRICAS ESPECÍFICAS DE ACESSO -->
+        <section class="access-kpi-grid">
+          <div class="kpi-card accent-card">
+            <div class="kpi-icon-wrap bg-green-subtle">📲</div>
+            <div class="kpi-data">
+              <span class="kpi-label">Total de Acessos</span>
+              <strong class="kpi-value" id="kpiAccessTotal">0</strong>
+              <span class="kpi-detail">Vezes que o link/QR foi aberto</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-blue-subtle">👥</div>
+            <div class="kpi-data">
+              <span class="kpi-label">Pessoas Diferentes</span>
+              <strong class="kpi-value" id="kpiAccessVisitors">0</strong>
+              <span class="kpi-detail">Dispositivos/visitantes únicos</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-purple-subtle">🔄</div>
+            <div class="kpi-data">
+              <span class="kpi-label">Acessos por Pessoa</span>
+              <strong class="kpi-value" id="kpiAccessAvgPerPerson">1.0</strong>
+              <span class="kpi-detail">Média de retorno por visitante</span>
+            </div>
+          </div>
+
+          <div class="kpi-card highlight-peak">
+            <div class="kpi-icon-wrap bg-orange-subtle">🕒</div>
+            <div class="kpi-data">
+              <span class="kpi-label">Horário de Pico</span>
+              <strong class="kpi-value" id="kpiAccessPeakHour">--:--</strong>
+              <span class="kpi-detail" id="kpiAccessPeakDetail">Horário de maior leitura</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-emerald-subtle">📱</div>
+            <div class="kpi-data">
+              <span class="kpi-label">Acessos Celular</span>
+              <strong class="kpi-value" id="kpiAccessMobilePct">100%</strong>
+              <span class="kpi-detail">Leituras via smartphone</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- GRÁFICO DE ACESSOS POR HORA DO DIA (24H) -->
+        <section class="access-chart-card">
+          <div class="chart-header">
+            <div class="chart-header-titles">
+              <h3 class="chart-title">🕒 Distribuição de Acessos por Horário do Dia (00h às 23h)</h3>
+              <p class="chart-subtitle">Descubra em quais horários do dia as pessoas mais escaneiam o folheto do livro.</p>
+            </div>
+            <div class="peak-badge-pill" id="peakHourBadge">
+              <span class="peak-dot"></span>
+              <span id="peakHourBadgeText">Pico: Calculando...</span>
+            </div>
+          </div>
+
+          <!-- Barras de 24 Horas -->
+          <div class="hourly-chart-container">
+            <div class="hourly-bars-wrapper" id="hourlyBarsWrapper">
+              <!-- Gerado dinamicamente via admin.js com 24 colunas -->
+            </div>
+          </div>
+
+          <div class="chart-footer-note">
+            <span class="note-icon">💡</span>
+            <span id="hourlyInsightText">O gráfico acima exibe em tempo real quantas vezes a página foi acessada em cada hora do dia. Passe o mouse sobre as barras para ver a contagem exata.</span>
+          </div>
+        </section>
+
+        <!-- GRID DE 2 COLUNAS: RANKING DE PESSOAS + DISPOSITIVOS & ORIGENS -->
+        <section class="access-analytics-grid">
+          
+          <!-- Coluna 1: Ranking de Pessoas que Mais Acessaram -->
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <div>
+                <h4 class="analytics-title">👥 Acessos por Pessoa (Mais Frequentes)</h4>
+                <p class="analytics-subtitle">Descubra quem tem mais interesse ou abriu o aviso mais vezes.</p>
+              </div>
+              <span class="counter-badge" id="peopleRankingCount">0 pessoas</span>
+            </div>
+
+            <div class="people-ranking-scroll" id="peopleRankingList">
+              <!-- Gerado dinamicamente via admin.js -->
+            </div>
+          </div>
+
+          <!-- Coluna 2: Dispositivos & Origem -->
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <div>
+                <h4 class="analytics-title">📱 Dispositivos & Origem dos Acessos</h4>
+                <p class="analytics-subtitle">Aparelhos usados para escanear e canais de entrada.</p>
+              </div>
+            </div>
+
+            <div class="device-analytics-content" id="deviceAnalyticsContent">
+              <!-- Gerado dinamicamente via admin.js -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- PLANILHA COMPLETA DE ACESSOS COM BUSCA E FILTROS -->
+        <section class="access-table-card">
+          <div class="table-card-header">
+            <div class="table-titles">
+              <h3 class="table-title">📋 Planilha Detalhada de Acessos</h3>
+              <p class="table-subtitle">Carimbo individual com data, horário exato, visitante e aparelho de cada acesso.</p>
+            </div>
+
+            <div class="table-header-actions">
+              <button type="button" id="btnExportAccessCsv" class="btn-table-action btn-export" title="Baixar todos os acessos em formato CSV (compatível com Excel)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Exportar CSV</span>
+              </button>
+
+              <a id="btnOpenGoogleSheets" href="https://docs.google.com/spreadsheets/d/1n2wn6p_9rYgzwAb7JIHOqEDVx1HNfQRXCAj-uPtNrNA/edit" target="_blank" class="btn-table-action btn-sheets" title="Abrir a planilha diretamente no Google Planilhas">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                <span>Google Planilhas ↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Filtros da Tabela -->
+          <div class="table-filters-bar">
+            <div class="table-search-input-wrap">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input type="text" id="searchInput" placeholder="Buscar por nome ou telefone...">
+              <input type="text" id="accessSearchInput" placeholder="Buscar por nome, telefone, data, horário...">
             </div>
 
-            <div class="filter-tabs">
-              <button class="filter-tab active" data-filter="all">Todos (<span id="countTabAll">0</span>)</button>
-              <button class="filter-tab" data-filter="pending">Aguardando (<span id="countTabPending">0</span>)</button>
-              <button class="filter-tab" data-filter="scanned">Só Acessos (<span id="countTabScanned">0</span>)</button>
+            <div class="table-filter-group">
+              <label for="accessFilterPeriod" class="filter-label">Período:</label>
+              <select id="accessFilterPeriod" class="table-select">
+                <option value="all">Todos os Acessos</option>
+                <option value="today">Apenas Hoje</option>
+                <option value="yesterday">Ontem</option>
+                <option value="7days">Últimos 7 Dias</option>
+              </select>
+            </div>
+
+            <div class="table-filter-group">
+              <label for="accessFilterType" class="filter-label">Tipo:</label>
+              <select id="accessFilterType" class="table-select">
+                <option value="all">Todos os Tipos</option>
+                <option value="first">1º Acesso Apenas</option>
+                <option value="return">Retornos Apenas</option>
+              </select>
+            </div>
+
+            <div class="table-count-summary" id="accessTableCountSummary">
+              Exibindo <strong>0</strong> acessos
             </div>
           </div>
 
-          <div class="conversations-scroll-list" id="conversationsList">
-            <!-- Conversas geradas dinamicamente via admin.js -->
-            <div class="inbox-loading">Carregando contatos...</div>
-          </div>
-        </div>
-
-        <!-- Coluna Direita: Conversa Ativa Selecionada -->
-        <div class="chat-viewer-panel" id="chatViewerPanel">
-
-          <!-- Estado Sem Seleção -->
-          <div id="emptyChatState" class="empty-chat-state">
-            <div class="empty-icon">💬</div>
-            <h3>Nenhuma conversa selecionada</h3>
-            <p>Selecione um contato na lista ao lado para ver o histórico e responder.</p>
-          </div>
-
-          <!-- Estado Com Conversa Ativa -->
-          <div id="activeChatState" class="active-chat-state hidden">
-            <!-- Header do Chat Selecionado -->
-            <div class="active-chat-header">
-              <!-- Botão Voltar (Visível no Celular) -->
-              <button type="button" id="btnBackToInbox" class="btn-back-inbox" aria-label="Voltar para a lista">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12"></line>
-                  <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                <span>Voltar</span>
-              </button>
-
-              <div class="contact-details">
-                <div class="contact-avatar-large" id="activeContactAvatar">JD</div>
-                <div class="contact-meta">
-                  <div class="name-row">
-                    <h3 id="activeContactName">Nome do Visitante</h3>
-                    <span class="status-pill" id="activeContactStatus">Aguardando</span>
-                  </div>
-                  <div class="contact-sub-row">
-                    <span id="activeContactPhone">Sem telefone</span>
-                    <span class="bullet">•</span>
-                    <span id="activeContactVisits">1 acesso</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="contact-actions">
-                <a id="btnCallWhatsapp" href="#" target="_blank" class="action-btn-whatsapp" title="Abrir conversa no WhatsApp Web / App">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.983.541 1.879.82 2.791.82 3.181 0 5.767-2.586 5.767-5.766.001-3.181-2.586-5.766-5.767-5.766zm0-2.172c4.385 0 7.943 3.559 7.943 7.938 0 4.38-3.558 7.938-7.943 7.938-1.343 0-2.617-.338-3.738-.934l-4.293 1.124 1.146-4.186c-.672-1.182-1.058-2.545-1.058-3.942 0-4.379 3.558-7.938 7.943-7.938z"/>
-                  </svg>
-                  Chamar no WhatsApp
-                </a>
-              </div>
-            </div>
-
-            <!-- Janela de Mensagens do Chat -->
-            <div class="active-chat-messages" id="activeChatMessages">
-              <!-- Mensagens renderizadas dinamicamente -->
-            </div>
-
-            <!-- Caixa de Resposta do Cleiton -->
-            <form id="adminReplyForm" class="admin-reply-box">
-              <div class="reply-textarea-wrap">
-                <textarea id="adminReplyText" rows="2" placeholder="Escreva sua resposta para o visitante... (Pressione Ctrl+Enter para enviar)" required></textarea>
-              </div>
-              <button type="submit" id="btnAdminSendReply" class="btn-reply-send">
-                <span>Responder como Cleiton</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="22" y1="2" x2="11" y2="13"></line>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-              </button>
-            </form>
+          <!-- Container da Tabela Estilo Planilha -->
+          <div class="spreadsheet-table-container">
+            <table class="spreadsheet-table" id="accessLogsTable">
+              <thead>
+                <tr>
+                  <th>Data & Horário</th>
+                  <th>Hora</th>
+                  <th>Dia</th>
+                  <th>Pessoa / Visitante</th>
+                  <th>Contato</th>
+                  <th>Dispositivo</th>
+                  <th>Origem</th>
+                  <th>Nº Acesso</th>
+                  <th>Tipo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="accessLogsTableBody">
+                <!-- Linhas geradas dinamicamente via admin.js -->
+                <tr>
+                  <td colspan="10" class="table-loading-cell">Carregando planilha de acessos...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-        </div>
+        </section>
 
-      </section>
+      </div>
 
     </main>
 

@@ -24,6 +24,7 @@ const SPREADSHEET_ID = "1n2wn6p_9rYgzwAb7JIHOqEDVx1HNfQRXCAj-uPtNrNA";
 // Nome das abas da planilha
 const SHEET_VISITORS = "Visitantes";
 const SHEET_MESSAGES = "Mensagens";
+const SHEET_ACCESS_LOGS = "Acessos";
 
 /**
  * Ponto de entrada para requisições GET
@@ -127,7 +128,12 @@ function getOrCreateSheet(sheetName, headers) {
     sheet = ss.insertSheet(sheetName);
     if (headers && headers.length > 0) {
       sheet.appendRow(headers);
-      sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#38E54D");
+      const headerColor = sheetName === SHEET_ACCESS_LOGS ? "#0c1d13" : "#38E54D";
+      const fontColor = sheetName === SHEET_ACCESS_LOGS ? "#ffffff" : "#0c1d13";
+      sheet.getRange(1, 1, 1, headers.length)
+        .setFontWeight("bold")
+        .setBackground(headerColor)
+        .setFontColor(fontColor);
       sheet.setFrozenRows(1);
     }
   }
@@ -138,7 +144,22 @@ function handlePing(params) {
   const token = params.token;
   if (!token) return jsonResponse({ success: false, error: "Token ausente" });
 
-  const sheet = getOrCreateSheet(SHEET_VISITORS, [
+  const nome = (params.nome || "").trim();
+  const contato = (params.contato || "").trim();
+  const dispositivo = (params.dispositivo || "Não identificado").trim();
+  const origem = (params.origem || "QR Code Folheto").trim();
+
+  const now = new Date();
+  const dataHoraStr = Utilities.formatDate(now, "America/Sao_Paulo", "dd/MM/yyyy HH:mm:ss");
+  const dataStr = Utilities.formatDate(now, "America/Sao_Paulo", "dd/MM/yyyy");
+  const horaStr = Utilities.formatDate(now, "America/Sao_Paulo", "HH:mm:ss");
+  const horaNumero = parseInt(Utilities.formatDate(now, "America/Sao_Paulo", "HH"), 10);
+
+  const diasSemana = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+  const diaSemanaStr = diasSemana[now.getDay()];
+
+  // 1. Atualizar aba Visitantes (Sumário)
+  const visSheet = getOrCreateSheet(SHEET_VISITORS, [
     "Data Primeiro Acesso",
     "Data Último Acesso",
     "Token",
@@ -147,26 +168,76 @@ function handlePing(params) {
     "Total Acessos"
   ]);
 
-  const data = sheet.getDataRange().getValues();
-  const now = Utilities.formatDate(new Date(), "America/Sao_Paulo", "dd/MM/yyyy HH:mm:ss");
+  const visData = visSheet.getDataRange().getValues();
   let foundRow = -1;
+  let visitCount = 1;
+  let isFirstVisit = true;
+  let finalNome = nome;
+  let finalContato = contato;
 
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][2] === token) {
+  for (let i = 1; i < visData.length; i++) {
+    if (visData[i][2] === token) {
       foundRow = i + 1;
+      visitCount = parseInt(visData[i][5] || 1, 10) + 1;
+      isFirstVisit = false;
+      if (!finalNome && visData[i][3]) finalNome = visData[i][3];
+      if (!finalContato && visData[i][4]) finalContato = visData[i][4];
       break;
     }
   }
 
   if (foundRow > 0) {
-    const currentCount = parseInt(data[foundRow - 1][5] || 1, 10);
-    sheet.getRange(foundRow, 2).setValue(now);
-    sheet.getRange(foundRow, 6).setValue(currentCount + 1);
+    visSheet.getRange(foundRow, 2).setValue(dataHoraStr);
+    visSheet.getRange(foundRow, 6).setValue(visitCount);
+    if (nome) visSheet.getRange(foundRow, 4).setValue(nome);
+    if (contato) visSheet.getRange(foundRow, 5).setValue(contato);
   } else {
-    sheet.appendRow([now, now, token, params.nome || "", params.contato || "", 1]);
+    visSheet.appendRow([dataHoraStr, dataHoraStr, token, nome, contato, 1]);
   }
 
-  return jsonResponse({ success: true, token: token });
+  // 2. Registrar na aba Acessos (Log individual de cada leitura)
+  const accessSheet = getOrCreateSheet(SHEET_ACCESS_LOGS, [
+    "ID Acesso",
+    "Data/Hora",
+    "Data",
+    "Horário",
+    "Hora do Dia",
+    "Dia da Semana",
+    "Token",
+    "Nome",
+    "Contato",
+    "Dispositivo",
+    "Origem",
+    "Nº Acesso da Pessoa",
+    "Tipo"
+  ]);
+
+  const accId = "acc_" + now.getTime() + "_" + Math.random().toString(36).substring(2, 6);
+  const tipoAcesso = isFirstVisit ? "1º Acesso" : "Retorno";
+
+  accessSheet.appendRow([
+    accId,
+    dataHoraStr,
+    dataStr,
+    horaStr,
+    horaNumero,
+    diaSemanaStr,
+    token,
+    finalNome || "Visitante Anônimo",
+    finalContato || "",
+    dispositivo,
+    origem,
+    visitCount,
+    tipoAcesso
+  ]);
+
+  return jsonResponse({
+    success: true,
+    token: token,
+    visit_count: visitCount,
+    tipo: tipoAcesso,
+    hora: horaNumero
+  });
 }
 
 function handleSendMessage(data) {
@@ -229,6 +300,23 @@ function handleSendMessage(data) {
     visSheet.getRange(visRow, 2).setValue(now);
   } else {
     visSheet.appendRow([now, now, token, nome, contato, 1]);
+  }
+
+  // 3. Atualizar registros anteriores na aba Acessos com o nome/contato identificado
+  if (nome) {
+    try {
+      const accSheet = getOrCreateSheet(SHEET_ACCESS_LOGS);
+      const accRows = accSheet.getDataRange().getValues();
+      for (let i = 1; i < accRows.length; i++) {
+        if (accRows[i][6] === token) {
+          const currentNome = accRows[i][7];
+          if (!currentNome || currentNome === "Visitante Anônimo" || currentNome === "Visitante") {
+            accSheet.getRange(i + 1, 8).setValue(nome);
+            if (contato) accSheet.getRange(i + 1, 9).setValue(contato);
+          }
+        }
+      }
+    } catch (e) {}
   }
 
   // Retornar histórico atualizado
@@ -341,21 +429,42 @@ function handleAdminOverview() {
     "Mensagem",
     "Status"
   ]);
+  const accSheet = getOrCreateSheet(SHEET_ACCESS_LOGS, [
+    "ID Acesso",
+    "Data/Hora",
+    "Data",
+    "Horário",
+    "Hora do Dia",
+    "Dia da Semana",
+    "Token",
+    "Nome",
+    "Contato",
+    "Dispositivo",
+    "Origem",
+    "Nº Acesso da Pessoa",
+    "Tipo"
+  ]);
 
   const visRows = visSheet.getDataRange().getValues();
   const msgRows = msgSheet.getDataRange().getValues();
+  const accRows = accSheet.getDataRange().getValues();
 
+  // 1. Processar Visitantes
   const visitorsMap = {};
+  let totalAccessesFallback = 0;
+
   for (let i = 1; i < visRows.length; i++) {
     const row = visRows[i];
     if (row[2]) {
+      const count = parseInt(row[5] || 1, 10);
+      totalAccessesFallback += count;
       visitorsMap[row[2]] = {
         data_primeiro_acesso: row[0],
         data_ultimo_acesso: row[1],
         token: row[2],
         nome: row[3] || "Visitante Anônimo",
         contato: row[4] || "",
-        total_acessos: row[5] || 1,
+        total_acessos: count,
         total_mensagens: 0,
         ultima_mensagem: "",
         ultima_data_msg: "",
@@ -365,6 +474,7 @@ function handleAdminOverview() {
     }
   }
 
+  // 2. Processar Mensagens
   let totalMessages = 0;
   let unreadCount = 0;
 
@@ -396,7 +506,7 @@ function handleAdminOverview() {
     v.ultima_data_msg = row[1];
     v.ultimo_remetente = row[5];
 
-    if (row[3] && !v.nome) v.nome = row[3];
+    if (row[3] && (!v.nome || v.nome === "Visitante Anônimo")) v.nome = row[3];
     if (row[4] && !v.contato) v.contato = row[4];
 
     if (row[5] === "Visitante" && row[7] === "novo") {
@@ -405,12 +515,81 @@ function handleAdminOverview() {
     }
   }
 
-  const visitorsList = Object.values(visitorsMap).sort((a, b) => {
+  // 3. Processar Logs de Acessos
+  const accessLogs = [];
+  const hourlyCounts = new Array(24).fill(0);
+  const deviceCounts = {};
+  const originCounts = {};
+  let totalLoggedAccesses = 0;
+
+  for (let i = 1; i < accRows.length; i++) {
+    const row = accRows[i];
+    if (!row[0] && !row[1]) continue;
+    totalLoggedAccesses++;
+
+    let hour = parseInt(row[4], 10);
+    if (isNaN(hour) || hour < 0 || hour > 23) {
+      const timeStr = String(row[3] || "");
+      if (timeStr.includes(":")) {
+        hour = parseInt(timeStr.split(":")[0], 10);
+      }
+    }
+    if (!isNaN(hour) && hour >= 0 && hour <= 23) {
+      hourlyCounts[hour]++;
+    }
+
+    const dev = String(row[9] || "Outro");
+    deviceCounts[dev] = (deviceCounts[dev] || 0) + 1;
+
+    const orig = String(row[10] || "QR Code Folheto");
+    originCounts[orig] = (originCounts[orig] || 0) + 1;
+
+    accessLogs.push({
+      id: String(row[0]),
+      data_hora: String(row[1]),
+      data: String(row[2]),
+      horario: String(row[3]),
+      hora: isNaN(hour) ? 0 : hour,
+      dia_semana: String(row[5] || ""),
+      token: String(row[6]),
+      nome: String(row[7] || "Visitante Anônimo"),
+      contato: String(row[8] || ""),
+      dispositivo: String(row[9] || "Não identificado"),
+      origem: String(row[10] || "QR Code Folheto"),
+      num_acesso: parseInt(row[11] || 1, 10),
+      tipo: String(row[12] || "Acesso")
+    });
+  }
+
+  // Se a aba Acessos estiver vazia, usar fallback
+  const finalTotalAccesses = totalLoggedAccesses > 0 ? totalLoggedAccesses : totalAccessesFallback;
+
+  // Horário de pico
+  let peakHour = 0;
+  let peakCount = 0;
+  for (let h = 0; h < 24; h++) {
+    if (hourlyCounts[h] > peakCount) {
+      peakCount = hourlyCounts[h];
+      peakHour = h;
+    }
+  }
+
+  // Percentual Mobile
+  let mobileCount = 0;
+  Object.keys(deviceCounts).forEach(function(dev) {
+    const dLower = dev.toLowerCase();
+    if (dLower.includes("android") || dLower.includes("iphone") || dLower.includes("ios") || dLower.includes("celular") || dLower.includes("ipad")) {
+      mobileCount += deviceCounts[dev];
+    }
+  });
+  const pctMobile = totalLoggedAccesses > 0 ? Math.round((mobileCount / totalLoggedAccesses) * 100) : 100;
+
+  // Lista ordenada de conversas
+  const visitorsList = Object.values(visitorsMap).sort(function(a, b) {
     if (a.status_pendente && !b.status_pendente) return -1;
     if (!a.status_pendente && b.status_pendente) return 1;
     
-    // Converte datas com segurança para timestamp numérico
-    const getTimeSafe = (val) => {
+    const getTimeSafe = function(val) {
       if (!val) return 0;
       if (val instanceof Date) return val.getTime();
       const parsed = Date.parse(val);
@@ -422,17 +601,42 @@ function handleAdminOverview() {
     return timeB - timeA;
   });
 
+  // Ranking de pessoas por acessos (ordenado por total_acessos decrescente)
+  const rankingPeople = Object.values(visitorsMap)
+    .sort(function(a, b) {
+      return (b.total_acessos || 0) - (a.total_acessos || 0);
+    })
+    .slice(0, 50);
+
+  // Ordenar logs recentes do mais novo para o mais antigo (últimos 300)
+  accessLogs.reverse();
+  const recentLogs = accessLogs.slice(0, 300);
+
+  const totalVisitorsCount = visRows.length > 1 ? visRows.length - 1 : 0;
+  const avgAccessPerPerson = totalVisitorsCount > 0 ? (finalTotalAccesses / totalVisitorsCount).toFixed(1) : "1.0";
+
   const stats = {
-    total_visitantes: visRows.length > 1 ? visRows.length - 1 : 0,
-    total_conversas: visitorsList.filter(v => v.total_mensagens > 0).length,
+    total_visitantes: totalVisitorsCount,
+    total_conversas: visitorsList.filter(function(v) { return v.total_mensagens > 0; }).length,
     total_mensagens: totalMessages,
-    mensagens_pendentes: unreadCount
+    mensagens_pendentes: unreadCount,
+    total_acessos: finalTotalAccesses,
+    media_acessos_pessoa: avgAccessPerPerson,
+    horario_pico_hora: peakHour,
+    horario_pico_label: peakCount > 0 ? String(peakHour).padStart(2, "0") + ":00 - " + String(peakHour + 1).padStart(2, "0") + ":00" : "Aguardando acessos",
+    horario_pico_count: peakCount,
+    pct_mobile: pctMobile
   };
 
   return jsonResponse({
     success: true,
     stats: stats,
-    conversations: visitorsList
+    conversations: visitorsList,
+    hourly_stats: hourlyCounts,
+    device_stats: deviceCounts,
+    origin_stats: originCounts,
+    ranking_people: rankingPeople,
+    access_logs: recentLogs
   });
 }
 
