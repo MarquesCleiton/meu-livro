@@ -43,6 +43,8 @@ const countTabAll = document.getElementById("countTabAll");
 const countTabPending = document.getElementById("countTabPending");
 const countTabScanned = document.getElementById("countTabScanned");
 const conversationsList = document.getElementById("conversationsList");
+const inboxLayoutWrapper = document.getElementById("inboxLayoutWrapper");
+const btnBackToInbox = document.getElementById("btnBackToInbox");
 
 const emptyChatState = document.getElementById("emptyChatState");
 const activeChatState = document.getElementById("activeChatState");
@@ -208,6 +210,17 @@ function setupEventListeners() {
       }
     });
   }
+
+  // Voltar para a lista no mobile
+  if (btnBackToInbox) {
+    btnBackToInbox.addEventListener("click", () => {
+      if (inboxLayoutWrapper) {
+        inboxLayoutWrapper.classList.remove("mobile-chat-open");
+      }
+      activeToken = null;
+      renderConversationsList();
+    });
+  }
 }
 
 // ==========================================================================
@@ -343,6 +356,10 @@ function renderConversationsList() {
 function selectConversation(conv) {
   activeToken = conv.token;
   renderConversationsList();
+
+  if (inboxLayoutWrapper) {
+    inboxLayoutWrapper.classList.add("mobile-chat-open");
+  }
 
   emptyChatState.classList.add("hidden");
   activeChatState.classList.remove("hidden");
