@@ -149,13 +149,15 @@ function setupEventListeners() {
     }
   });
 
-  // Copiar token ao clicar
-  activeContactToken.addEventListener("click", () => {
-    if (activeToken) {
-      navigator.clipboard.writeText(activeToken);
-      showToast("Token copiado para a área de transferência!");
-    }
-  });
+  // Copiar token ao clicar (se existir)
+  if (activeContactToken) {
+    activeContactToken.addEventListener("click", () => {
+      if (activeToken) {
+        navigator.clipboard.writeText(activeToken);
+        showToast("Identificador copiado!");
+      }
+    });
+  }
 }
 
 // ==========================================================================
@@ -299,7 +301,7 @@ function selectConversation(conv) {
   activeContactName.textContent = conv.nome || "Visitante";
   activeContactPhone.textContent = conv.contato || "Nenhum telefone registrado";
   activeContactVisits.textContent = `${conv.total_acessos || 1} acesso(s)`;
-  activeContactToken.textContent = conv.token;
+  if (activeContactToken) activeContactToken.textContent = conv.token;
 
   if (conv.status_pendente) {
     activeContactStatus.textContent = "Aguardando sua resposta";
@@ -564,13 +566,18 @@ function getInitials(name) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function formatDateShort(dateStr) {
-  if (!dateStr) return "";
-  if (dateStr.includes(" ")) {
-    const parts = dateStr.split(" ");
-    return parts[1] || dateStr;
+function formatDateShort(dateVal) {
+  if (!dateVal) return "";
+  const d = new Date(dateVal);
+  if (!isNaN(d.getTime())) {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
-  return dateStr;
+  const str = String(dateVal);
+  if (str.includes(" ")) {
+    return str.split(" ")[1] || str;
+  }
+  return str;
 }
 
 function formatTimeNow() {

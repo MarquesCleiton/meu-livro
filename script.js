@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * SCRIPT.JS - LÓGICA DO CLIENTE VISITANTE (CHAT ÚNICO & SESSÃO PERSISTENTE)
+ * SCRIPT.JS - LÓGICA DO VISITANTE (BALÃO FLUTUANTE & CHAT COMPACTO)
  * ============================================================================
  */
 
@@ -20,6 +20,12 @@ let pollingInterval = null;
 let isSubmitting = false;
 
 // Elementos do DOM
+const floatingChatBtn = document.getElementById("floatingChatBtn");
+const btnOpenChatFromCard = document.getElementById("btnOpenChatFromCard");
+const chatDrawer = document.getElementById("chatDrawer");
+const chatDrawerBackdrop = document.getElementById("chatDrawerBackdrop");
+const btnCloseChatDrawer = document.getElementById("btnCloseChatDrawer");
+
 const contactFormContainer = document.getElementById("contactFormContainer");
 const chatViewContainer = document.getElementById("chatViewContainer");
 const contactForm = document.getElementById("contactForm");
@@ -31,9 +37,6 @@ const btnSubmitForm = document.getElementById("btnSubmitForm");
 const chatMessages = document.getElementById("chatMessages");
 const chatQuickForm = document.getElementById("chatQuickForm");
 const chatQuickInput = document.getElementById("chatQuickInput");
-const chatStatusText = document.getElementById("chatStatusText");
-const displayTokenShort = document.getElementById("displayTokenShort");
-const btnResetSession = document.getElementById("btnResetSession");
 const toastNotification = document.getElementById("toastNotification");
 
 // ==========================================================================
@@ -47,23 +50,17 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * Inicializa ou recupera o token de sessão do visitante
+ * Inicializa ou recupera o identificador do visitante
  */
 function initSession() {
   currentToken = localStorage.getItem(STORAGE_TOKEN_KEY);
 
   if (!currentToken) {
-    // Gerar token único v4 amigável
     currentToken = "usr_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
     localStorage.setItem(STORAGE_TOKEN_KEY, currentToken);
   }
 
-  // Atualizar indicador visual do token
-  if (displayTokenShort) {
-    displayTokenShort.textContent = "Sessão: " + currentToken.substring(0, 10) + "...";
-  }
-
-  // Preencher nome e telefone se já foram salvos anteriormente
+  // Preencher nome e telefone se já foram salvos
   const savedName = localStorage.getItem(STORAGE_USER_NAME);
   const savedPhone = localStorage.getItem(STORAGE_USER_PHONE);
   if (savedName && inputName) inputName.value = savedName;
@@ -79,7 +76,7 @@ function initSession() {
     }
   }
 
-  // Se já houver mensagens ou se já tiver nome cadastrado, verificar no servidor
+  // Se já houver mensagens ou se já tiver nome cadastrado, alternar para chat
   if (currentMessages.length > 0 || (savedName && savedPhone)) {
     switchToChatView();
     renderMessages(currentMessages);
@@ -100,12 +97,12 @@ async function pingVisitor() {
     
     await fetch(url, { method: "GET", mode: "no-cors" });
   } catch (err) {
-    console.warn("Aviso ao sincronizar ping:", err);
+    // Falha silenciosa
   }
 }
 
 /**
- * Máscara dinâmica para telefone brasileiro: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+ * Máscara para telefone celular
  */
 function setupPhoneMask() {
   if (!inputPhone) return;
@@ -126,35 +123,63 @@ function setupPhoneMask() {
 }
 
 /**
- * Configura ouvintes de eventos da página
+ * Configuração de Ouvintes de Eventos
  */
 function setupEventListeners() {
+  // Abrir Drawer de Chat pelo Balão Flutuante ou pelo Botão do Card
+  if (floatingChatBtn) {
+    floatingChatBtn.addEventListener("click", openChatDrawer);
+  }
+  if (btnOpenChatFromCard) {
+    btnOpenChatFromCard.addEventListener("click", openChatDrawer);
+  }
+
+  // Fechar Drawer de Chat
+  if (btnCloseChatDrawer) {
+    btnCloseChatDrawer.addEventListener("click", closeChatDrawer);
+  }
+  if (chatDrawerBackdrop) {
+    chatDrawerBackdrop.addEventListener("click", closeChatDrawer);
+  }
+
   // Envio do formulário inicial
   if (contactForm) {
     contactForm.addEventListener("submit", handleInitialFormSubmit);
   }
 
-  // Envio de mensagens subsequentes pelo chat rápido
+  // Envio pelo chat rápido
   if (chatQuickForm) {
     chatQuickForm.addEventListener("submit", handleQuickMessageSubmit);
   }
+}
 
-  // Botão de reiniciar sessão
-  if (btnResetSession) {
-    btnResetSession.addEventListener("click", () => {
-      if (confirm("Deseja realmente limpar sua conversa e reiniciar a sessão neste navegador?")) {
-        localStorage.removeItem(STORAGE_TOKEN_KEY);
-        localStorage.removeItem(STORAGE_USER_NAME);
-        localStorage.removeItem(STORAGE_USER_PHONE);
-        localStorage.removeItem(STORAGE_MESSAGES_KEY);
-        window.location.reload();
+function openChatDrawer() {
+  if (chatDrawer && chatDrawerBackdrop) {
+    chatDrawerBackdrop.classList.remove("hidden");
+    chatDrawer.classList.remove("hidden");
+
+    // Focar no campo adequado
+    setTimeout(() => {
+      if (!contactFormContainer.classList.contains("hidden")) {
+        if (!inputName.value) inputName.focus();
+        else if (!inputPhone.value) inputPhone.focus();
+        else inputMessage.focus();
+      } else {
+        chatQuickInput.focus();
       }
-    });
+    }, 300);
+  }
+}
+
+function closeChatDrawer() {
+  if (chatDrawer && chatDrawerBackdrop) {
+    chatDrawerBackdrop.classList.add("hidden");
+    chatDrawer.classList.add("hidden");
   }
 }
 
 /**
- * Processa o envio do formulário de primeiro contato
+ * Envio do formulário de primeiro contato
  */
 async function handleInitialFormSubmit(e) {
   e.preventDefault();
@@ -165,12 +190,12 @@ async function handleInitialFormSubmit(e) {
   const mensagem = inputMessage.value.trim();
 
   if (!nome) {
-    showToast("Por favor, informe seu nome.");
+    showToast("Por favor, digite seu nome.");
     inputName.focus();
     return;
   }
   if (!contato || contato.length < 10) {
-    showToast("Por favor, informe um WhatsApp ou telefone de contato válido.");
+    showToast("Por favor, digite um telefone válido.");
     inputPhone.focus();
     return;
   }
@@ -183,7 +208,6 @@ async function handleInitialFormSubmit(e) {
   isSubmitting = true;
   btnSubmitForm.classList.add("loading");
 
-  // Salvar dados no localStorage
   localStorage.setItem(STORAGE_USER_NAME, nome);
   localStorage.setItem(STORAGE_USER_PHONE, contato);
 
@@ -195,55 +219,6 @@ async function handleInitialFormSubmit(e) {
     mensagem: mensagem
   };
 
-  // Se o usuário ainda não colocou o GOOGLE_SCRIPT_URL, simular envio local perfeitamente
-  if (!GOOGLE_SCRIPT_URL) {
-    setTimeout(() => {
-      const nowStr = formatTimeNow();
-      const mockMsg = {
-        id: "mock_" + Date.now(),
-        data_hora: nowStr,
-        token: currentToken,
-        nome: nome,
-        contato: contato,
-        remetente: "Visitante",
-        mensagem: mensagem,
-        status: "novo"
-      };
-
-      currentMessages.push(mockMsg);
-      saveMessagesCache(currentMessages);
-
-      switchToChatView();
-      renderMessages(currentMessages);
-      playSendSound();
-      showToast("Mensagem enviada com sucesso!");
-
-      btnSubmitForm.classList.remove("loading");
-      isSubmitting = false;
-
-      // Resposta automática de boas-vindas do Cleiton no modo de teste
-      setTimeout(() => {
-        const replyMock = {
-          id: "rep_" + Date.now(),
-          data_hora: formatTimeNow(),
-          token: currentToken,
-          nome: "Cleiton M.",
-          contato: "",
-          remetente: "Cleiton",
-          mensagem: `Olá, ${nome}! Muito obrigado por entrar em contato sobre o livro Protocolo Bluehand. Já recebi seu recado!`,
-          status: "respondido"
-        };
-        currentMessages.push(replyMock);
-        saveMessagesCache(currentMessages);
-        renderMessages(currentMessages);
-        playReceiveSound();
-        showToast("Cleiton M. respondeu!");
-      }, 3000);
-    }, 900);
-    return;
-  }
-
-  // Envio real para o Google Apps Script
   try {
     const response = await fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
@@ -260,12 +235,10 @@ async function handleInitialFormSubmit(e) {
       playSendSound();
       showToast("Mensagem enviada com sucesso!");
     } else {
-      showToast("Mensagem enviada! Sincronizando com Cleiton...");
       switchToChatView();
     }
   } catch (err) {
-    console.error("Erro ao enviar:", err);
-    // Fallback: guarda localmente e prossegue para não travar o visitante
+    // Fallback local
     const fallbackMsg = {
       id: "local_" + Date.now(),
       data_hora: formatTimeNow(),
@@ -280,7 +253,7 @@ async function handleInitialFormSubmit(e) {
     saveMessagesCache(currentMessages);
     switchToChatView();
     renderMessages(currentMessages);
-    showToast("Mensagem salva e sincronizando...");
+    showToast("Mensagem enviada para o Cleiton!");
   } finally {
     btnSubmitForm.classList.remove("loading");
     isSubmitting = false;
@@ -288,7 +261,7 @@ async function handleInitialFormSubmit(e) {
 }
 
 /**
- * Envia mensagem rápida pelo chat aberto
+ * Envia mensagem rápida pelo chat
  */
 async function handleQuickMessageSubmit(e) {
   e.preventDefault();
@@ -316,8 +289,6 @@ async function handleQuickMessageSubmit(e) {
   renderMessages(currentMessages);
   playSendSound();
 
-  if (!GOOGLE_SCRIPT_URL) return;
-
   try {
     const payload = {
       action: "send_message",
@@ -331,10 +302,8 @@ async function handleQuickMessageSubmit(e) {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
-    }).catch(err => console.warn("Erro silencioso ao enviar:", err));
-  } catch (err) {
-    console.warn("Falha de rede:", err);
-  }
+    }).catch(() => {});
+  } catch (err) {}
 }
 
 /**
@@ -356,44 +325,41 @@ async function fetchMessagesFromServer() {
       saveMessagesCache(currentMessages);
       renderMessages(currentMessages);
 
-      // Notificar se chegou mensagem nova de Cleiton
+      // Notificar se Cleiton respondeu
       if (currentMessages.length > prevCount) {
         const lastMsg = currentMessages[currentMessages.length - 1];
         if (lastMsg.remetente === "Cleiton" && (!prevLastMsg || prevLastMsg.id !== lastMsg.id)) {
           playReceiveSound();
           showToast("Cleiton M. respondeu!");
+          // Se o drawer estiver fechado, destacar o botão
+          if (chatDrawer && chatDrawer.classList.contains("hidden")) {
+            floatingChatBtn.style.animation = "pulseDot 1s infinite";
+          }
         }
       }
     }
-  } catch (err) {
-    // Falha silenciosa de polling
-  }
+  } catch (err) {}
 }
 
 /**
- * Transiciona a visualização do formulário para o Chat
+ * Alterna visualização para o Chat
  */
 function switchToChatView() {
   contactFormContainer.classList.add("hidden");
   chatViewContainer.classList.remove("hidden");
 
-  // Iniciar polling a cada 7 segundos
   if (!pollingInterval) {
     pollingInterval = setInterval(fetchMessagesFromServer, 7000);
   }
 }
 
 /**
- * Renderiza as mensagens na tela de chat
+ * Renderiza as mensagens na tela
  */
 function renderMessages(messages) {
   if (!chatMessages) return;
 
-  chatMessages.innerHTML = `
-    <div class="chat-date-divider">
-      <span>Hoje</span>
-    </div>
-  `;
+  chatMessages.innerHTML = "";
 
   if (!messages || messages.length === 0) {
     const emptyRow = document.createElement("div");
@@ -401,7 +367,7 @@ function renderMessages(messages) {
     emptyRow.innerHTML = `
       <div class="chat-bubble">
         <div class="chat-bubble-sender">Cleiton M.</div>
-        Olá! Envie sua mensagem pelo formulário para falarmos diretamente.
+        Olá! Envie seu recado que te responderei por aqui.
       </div>
     `;
     chatMessages.appendChild(emptyRow);
@@ -413,7 +379,7 @@ function renderMessages(messages) {
     const row = document.createElement("div");
     row.className = `chat-bubble-row ${isVisitor ? "visitor" : "cleiton"}`;
 
-    const senderName = isVisitor ? (msg.nome || "Você") : "Cleiton M.";
+    const senderName = isVisitor ? "Você" : "Cleiton M.";
     const timeFormatted = formatMessageTime(msg.data_hora);
 
     row.innerHTML = `
@@ -427,15 +393,11 @@ function renderMessages(messages) {
     chatMessages.appendChild(row);
   });
 
-  // Rolar automaticamente para o final
   setTimeout(() => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }, 50);
 }
 
-/**
- * Salva mensagens no cache do navegador
- */
 function saveMessagesCache(msgs) {
   try {
     localStorage.setItem(STORAGE_MESSAGES_KEY, JSON.stringify(msgs));
@@ -443,7 +405,7 @@ function saveMessagesCache(msgs) {
 }
 
 /**
- * Efeitos Sonoros sintetizados com Web Audio API (sem dependência de arquivos externos)
+ * Efeitos Sonoros com Web Audio API
  */
 function playSendSound() {
   try {
@@ -493,9 +455,6 @@ function playReceiveSound() {
   } catch (e) {}
 }
 
-/**
- * Toast / Pop-up de Notificação rápida
- */
 let toastTimeout;
 function showToast(text) {
   if (!toastNotification) return;
@@ -505,26 +464,25 @@ function showToast(text) {
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => {
     toastNotification.classList.remove("visible");
-  }, 3500);
+  }, 3000);
 }
 
-/**
- * Formatadores e Utilitários
- */
 function formatTimeNow() {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, "0");
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function formatMessageTime(dateTimeStr) {
   if (!dateTimeStr) return "";
-  if (dateTimeStr.includes(" ")) {
-    const timePart = dateTimeStr.split(" ")[1];
-    if (timePart) {
-      const parts = timePart.split(":");
-      return `${parts[0]}:${parts[1]}`;
-    }
+  const d = new Date(dateTimeStr);
+  if (!isNaN(d.getTime())) {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  if (typeof dateTimeStr === "string" && dateTimeStr.includes(" ")) {
+    const parts = dateTimeStr.split(" ")[1]?.split(":");
+    if (parts && parts.length >= 2) return `${parts[0]}:${parts[1]}`;
   }
   return dateTimeStr;
 }

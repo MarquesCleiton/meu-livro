@@ -408,7 +408,18 @@ function handleAdminOverview() {
   const visitorsList = Object.values(visitorsMap).sort((a, b) => {
     if (a.status_pendente && !b.status_pendente) return -1;
     if (!a.status_pendente && b.status_pendente) return 1;
-    return (b.ultima_data_msg || b.data_ultimo_acesso).localeCompare(a.ultima_data_msg || a.data_ultimo_acesso);
+    
+    // Converte datas com segurança para timestamp numérico
+    const getTimeSafe = (val) => {
+      if (!val) return 0;
+      if (val instanceof Date) return val.getTime();
+      const parsed = Date.parse(val);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
+    const timeB = getTimeSafe(b.ultima_data_msg) || getTimeSafe(b.data_ultimo_acesso);
+    const timeA = getTimeSafe(a.ultima_data_msg) || getTimeSafe(a.data_ultimo_acesso);
+    return timeB - timeA;
   });
 
   const stats = {
