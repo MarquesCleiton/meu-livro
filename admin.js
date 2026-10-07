@@ -7,14 +7,13 @@
 // URL da Implantação Web App do Google Apps Script do Cleiton
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-cxADLboWj0K3ouC8qv6RyPUazl4Av99KMKVL1dYvTaaxRQnb9oTiPxEQNuBL5IuoxA/exec";
 
-// Senha mestra (deve ser a mesma definida no google-apps-script.js)
-const DEFAULT_ADMIN_KEY = "cleiton2026";
+// Chave de autenticação em memória (obtida dinamicamente do campo de senha digitado pelo usuário)
+let adminKey = "";
 
-// Chave da sessão
+// Chave da sessão no navegador
 const STORAGE_ADMIN_AUTH = "cleiton_admin_authenticated";
 
 // Estado da Aplicação
-let adminKey = DEFAULT_ADMIN_KEY;
 let isAuthenticated = false;
 let conversationsData = [];
 let activeToken = null;
@@ -27,6 +26,7 @@ const loginOverlay = document.getElementById("loginOverlay");
 const adminApp = document.getElementById("adminApp");
 const adminLoginForm = document.getElementById("adminLoginForm");
 const adminPasswordInput = document.getElementById("adminPasswordInput");
+const btnAdminLogin = document.getElementById("btnAdminLogin");
 const btnLogout = document.getElementById("btnLogout");
 const btnManualRefresh = document.getElementById("btnManualRefresh");
 const gasWarningBanner = document.getElementById("gasWarningBanner");
@@ -62,18 +62,72 @@ const adminToast = document.getElementById("adminToast");
 // INICIALIZAÇÃO
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-  checkAuth();
   setupEventListeners();
+  checkAuth();
 });
 
-function checkAuth() {
+async function checkAuth() {
   const savedAuth = sessionStorage.getItem(STORAGE_ADMIN_AUTH);
   if (savedAuth) {
     adminKey = savedAuth;
-    unlockAdmin();
+    await verifyAndUnlock(savedAuth, true);
   } else {
-    loginOverlay.classList.remove("hidden");
-    adminApp.classList.add("hidden");
+    showLoginScreen();
+  }
+}
+
+function showLoginScreen(errorMsg = "") {
+  sessionStorage.removeItem(STORAGE_ADMIN_AUTH);
+  loginOverlay.classList.remove("hidden");
+  adminApp.classList.add("hidden");
+  if (btnAdminLogin) {
+    btnAdminLogin.disabled = false;
+    btnAdminLogin.textContent = "Acessar Painel";
+  }
+  if (errorMsg) {
+    showToast(errorMsg);
+    if (adminPasswordInput) {
+      adminPasswordInput.style.borderColor = "var(--admin-danger)";
+      adminPasswordInput.focus();
+    }
+  }
+}
+
+async function verifyAndUnlock(password, isAutoLogin = false) {
+  if (btnAdminLogin) {
+    btnAdminLogin.disabled = true;
+    btnAdminLogin.textContent = "Verificando senha...";
+  }
+
+  // Se não houver Google Script configurado, usa mock
+  if (!GOOGLE_SCRIPT_URL) {
+    unlockAdmin();
+    loadMockData();
+    return;
+  }
+
+  try {
+    const url = `${GOOGLE_SCRIPT_URL}?action=admin_overview&admin_key=${encodeURIComponent(password)}&_t=${Date.now()}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.success) {
+      sessionStorage.setItem(STORAGE_ADMIN_AUTH, password);
+      adminKey = password;
+      unlockAdmin();
+      updateKpis(data.stats);
+      conversationsData = data.conversations || [];
+      renderConversationsList();
+    } else {
+      showLoginScreen(data.error || "Senha de administrador incorreta.");
+    }
+  } catch (err) {
+    console.error("Erro ao autenticar:", err);
+    if (isAutoLogin) {
+      showLoginScreen("Erro de conexão com o Google Sheets. Digite a senha novamente.");
+    } else {
+      showLoginScreen("Falha ao conectar. Verifique sua conexão e tente novamente.");
+    }
   }
 }
 
@@ -81,12 +135,6 @@ function unlockAdmin() {
   isAuthenticated = true;
   loginOverlay.classList.add("hidden");
   adminApp.classList.remove("hidden");
-
-  if (!GOOGLE_SCRIPT_URL) {
-    gasWarningBanner.classList.remove("hidden");
-  }
-
-  loadAdminData();
 
   // Iniciar atualização periódica a cada 10s
   if (!refreshInterval) {
@@ -98,16 +146,14 @@ function unlockAdmin() {
 
 function setupEventListeners() {
   // Login
-  adminLoginForm.addEventListener("submit", (e) => {
+  adminLoginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const pass = adminPasswordInput.value.trim();
-    if (pass === DEFAULT_ADMIN_KEY || pass.length >= 4) {
-      sessionStorage.setItem(STORAGE_ADMIN_AUTH, pass);
-      adminKey = pass;
-      unlockAdmin();
-    } else {
-      showToast("Senha incorreta. Tente novamente.");
+    if (!pass) {
+      showToast("Por favor, digite a senha.");
+      return;
     }
+    await verifyAndUnlock(pass, false);
   });
 
   // Logout

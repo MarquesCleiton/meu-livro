@@ -15,8 +15,8 @@
  * ============================================================================
  */
 
-// Senha mestra do Cleiton para acessar o admin.html e responder mensagens
-const ADMIN_KEY = "cleiton2026";
+// Defina aqui a sua senha secreta para acessar o admin.html:
+const ADMIN_KEY = ""; // Digite sua senha secreta aqui no editor do Apps Script
 
 // ID da Planilha do Cleiton configurado:
 const SPREADSHEET_ID = "1n2wn6p_9rYgzwAb7JIHOqEDVx1HNfQRXCAj-uPtNrNA";

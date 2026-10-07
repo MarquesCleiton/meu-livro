@@ -17,9 +17,9 @@ Possui:
    - Dê um nome para ela, por exemplo: `Contatos - Livro Cleiton`.
 2. No menu superior da planilha, clique em **Extensões** > **Apps Script**.
 3. Apague qualquer código existente no editor e copie e cole todo o conteúdo do arquivo [google-apps-script.js](google-apps-script.js).
-4. *(Opcional)* Se quiser alterar a senha padrão do painel administrativo, altere a linha 19:
+4. *(Opcional)* Defina uma senha na linha 19:
    ```javascript
-   const ADMIN_KEY = "cleiton2026"; // Escolha a sua senha aqui
+   const ADMIN_KEY = "SUA_SENHA_AQUI"; // Escolha a sua senha secreta aqui
    ```
 5. No canto superior direito do Apps Script, clique no botão azul **Implantar** (Deploy) > **Nova implantação** (New deployment).
    - Clique no ícone de engrenagem ao lado de "Selecione o tipo" e escolha **Aplicativo da Web** (Web app).
@@ -69,7 +69,7 @@ Abra os arquivos abaixo e cole o URL copiado entre as aspas:
   `https://seu-usuario.github.io/meu-livro/`
 - **Seu Painel de Controle Secreto**:
   `https://seu-usuario.github.io/meu-livro/admin.html`
-  - Senha padrão: `cleiton2026`
+  - Acesse com a senha que você configurou no Google Apps Script.
 
 ---
 
