@@ -1,11 +1,10 @@
 /* ==========================================================================
-   STYLE.CSS - VERSÃO DESTACADA E LEGÍVEL (SEM CONFLITO DE LAYOUT)
+   STYLE.CSS - VERSÃO HARMONIOSA, CENTRADA E SEM VAZIOS
    ========================================================================== */
 
 :root {
   --color-neon-green: #38e54d;
   --color-neon-hover: #2cd040;
-  --color-neon-light: #e6fced;
   --color-dark-green: #0c1d13;
   --color-deep-forest: #142e20;
   --color-bg-page: #f8faf8;
@@ -18,14 +17,13 @@
   --font-display: 'Rubik', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  --shadow-card: 0 10px 30px rgba(12, 29, 19, 0.09);
+  --shadow-card: 0 10px 28px rgba(12, 29, 19, 0.08);
   --shadow-neon: 0 8px 24px rgba(56, 229, 77, 0.45);
-  --shadow-fab: 0 10px 25px rgba(0, 0, 0, 0.3);
   --shadow-drawer: 0 -12px 40px rgba(0, 0, 0, 0.25);
 
   --radius-sm: 8px;
   --radius-md: 14px;
-  --radius-lg: 22px;
+  --radius-lg: 20px;
   --radius-pill: 9999px;
 
   --transition-smooth: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
@@ -38,17 +36,17 @@
 }
 
 html, body {
-  min-height: 100dvh;
+  min-height: 100%;
   background-color: var(--color-bg-page);
   color: var(--color-text-main);
   font-family: var(--font-body);
   line-height: 1.3;
-  position: relative;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 /* ==========================================================================
-   DECORAÇÕES DE CANTO (PROPORCIONAIS)
+   DECORAÇÕES FLUIDAS DE CANTO
    ========================================================================== */
 .corner-shape {
   position: fixed;
@@ -76,32 +74,32 @@ html, body {
 }
 
 /* ==========================================================================
-   CONTAINER PRINCIPAL
+   CONTAINER PRINCIPAL: CENTRALIZADO COM ESPAÇAMENTO HARMÔNICO
    ========================================================================== */
 .page-container {
   position: relative;
   z-index: 2;
-  max-width: 460px;
-  height: 100svh;
-  max-height: 100svh;
+  max-width: 440px;
+  min-height: 100svh;
   margin: 0 auto;
-  padding: 8px 14px 68px;
+  padding: 14px 16px 76px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
 }
 
 /* ==========================================================================
-   CABEÇALHO GRANDE E DESTACADO
+   CABEÇALHO
    ========================================================================== */
 .hero-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 2px;
+  gap: 10px;
   text-align: center;
+  width: 100%;
 }
 
 .title-container {
@@ -123,17 +121,17 @@ html, body {
 }
 
 .title-top {
-  font-size: clamp(1.2rem, 4.4vw, 1.65rem);
+  font-size: clamp(1.25rem, 4.6vw, 1.75rem);
   transform: rotate(-1deg);
 }
 
 .brush-badge {
   background-color: var(--color-neon-green);
   color: #ffffff;
-  padding: 2px 18px 4px;
+  padding: 3px 18px 5px;
   margin: 2px 0;
   border-radius: var(--radius-pill);
-  font-size: clamp(1.35rem, 5.2vw, 2.0rem);
+  font-size: clamp(1.45rem, 5.6vw, 2.15rem);
   transform: rotate(-2deg);
   display: inline-block;
   box-shadow: 0 4px 14px rgba(56, 229, 77, 0.45);
@@ -141,7 +139,7 @@ html, body {
 }
 
 .title-bottom {
-  font-size: clamp(1.4rem, 5.4vw, 2.1rem);
+  font-size: clamp(1.5rem, 5.8vw, 2.25rem);
   transform: rotate(1deg);
 }
 
@@ -149,37 +147,38 @@ html, body {
 .doodle-bursts {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   opacity: 0.9;
 }
 
 .doodle-bursts span {
   display: block;
-  height: 3.5px;
+  height: 3px;
   background-color: var(--color-neon-green);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-.doodle-bursts.left span:nth-child(1) { width: 16px; transform: rotate(-30deg); }
-.doodle-bursts.left span:nth-child(2) { width: 26px; transform: rotate(0deg); }
-.doodle-bursts.left span:nth-child(3) { width: 16px; transform: rotate(30deg); }
+.doodle-bursts.left span:nth-child(1) { width: 14px; transform: rotate(-30deg); }
+.doodle-bursts.left span:nth-child(2) { width: 22px; transform: rotate(0deg); }
+.doodle-bursts.left span:nth-child(3) { width: 14px; transform: rotate(30deg); }
 
-.doodle-bursts.right span:nth-child(1) { width: 16px; transform: rotate(30deg); }
-.doodle-bursts.right span:nth-child(2) { width: 26px; transform: rotate(0deg); }
-.doodle-bursts.right span:nth-child(3) { width: 16px; transform: rotate(-30deg); }
+.doodle-bursts.right span:nth-child(1) { width: 14px; transform: rotate(30deg); }
+.doodle-bursts.right span:nth-child(2) { width: 22px; transform: rotate(0deg); }
+.doodle-bursts.right span:nth-child(3) { width: 14px; transform: rotate(-30deg); }
 
 /* ==========================================================================
-   CARD DO FOLHETO (ELEMENTOS GRANDES E LEGÍVEIS)
+   CARD DO FOLHETO
    ========================================================================== */
 .flyer-card {
+  width: 100%;
   background: var(--color-card-bg);
   border: 1.8px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 12px 14px 10px;
+  padding: 14px 16px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 11px;
 }
 
 .flyer-content-row {
@@ -189,8 +188,8 @@ html, body {
 }
 
 .book-box {
-  width: 105px;
-  min-width: 105px;
+  width: 110px;
+  min-width: 110px;
   display: flex;
   justify-content: center;
 }
@@ -198,10 +197,10 @@ html, body {
 .book-img {
   width: 100%;
   height: auto;
-  max-height: 130px;
+  max-height: 140px;
   object-fit: contain;
-  border-radius: 5px;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.26));
+  border-radius: 6px;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
   display: block;
 }
 
@@ -209,7 +208,7 @@ html, body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .info-pill-item {
@@ -217,8 +216,8 @@ html, body {
   flex-direction: column;
   background: #fbfdfb;
   border: 1.2px solid #e5ebe4;
-  border-radius: 8px;
-  padding: 3px 7px;
+  border-radius: 9px;
+  padding: 4px 8px;
 }
 
 .pill-tag {
@@ -226,17 +225,17 @@ html, body {
   background-color: var(--color-neon-green);
   color: var(--color-dark-green);
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 900;
   text-transform: uppercase;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: var(--radius-pill);
   line-height: 1.1;
   letter-spacing: 0.2px;
 }
 
 .pill-title {
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: var(--color-dark-green);
   line-height: 1.2;
@@ -244,30 +243,30 @@ html, body {
 }
 
 .person-name {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 900;
 }
 
 .address-text {
-  font-size: 0.90rem;
+  font-size: 0.92rem;
   font-weight: 800;
   color: var(--color-dark-green);
 }
 
 .contact-prompt-wrap {
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .contact-prompt {
   font-family: var(--font-display);
-  font-size: 0.96rem;
+  font-size: 1rem;
   font-weight: 900;
   color: var(--color-dark-green);
   line-height: 1.1;
 }
 
 .doodle-underline {
-  height: 3px;
+  height: 3.5px;
   background: var(--color-neon-green);
   border-radius: 3px;
   width: 95%;
@@ -278,13 +277,13 @@ html, body {
 .instagram-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
   color: #ffffff;
   text-decoration: none;
   border-radius: var(--radius-md);
-  padding: 8px 12px;
-  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.25);
+  padding: 10px 14px;
+  box-shadow: 0 4px 14px rgba(225, 48, 108, 0.28);
   transition: var(--transition-smooth);
 }
 
@@ -294,17 +293,12 @@ html, body {
 
 .insta-icon-circle {
   background: rgba(255, 255, 255, 0.22);
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.insta-icon-circle svg {
-  width: 17px;
-  height: 17px;
 }
 
 .insta-info {
@@ -314,7 +308,7 @@ html, body {
 }
 
 .insta-sub {
-  font-size: 0.62rem;
+  font-size: 0.65rem;
   opacity: 0.92;
   text-transform: uppercase;
   font-weight: 700;
@@ -322,32 +316,38 @@ html, body {
 }
 
 .insta-username {
-  font-size: 0.86rem;
+  font-size: 0.92rem;
   font-weight: 900;
   line-height: 1.1;
 }
 
 .insta-arrow {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 900;
 }
 
 /* ==========================================================================
-   AGRADECIMENTO INTEGRADO NO CARD (100% VISÍVEL NO MOBILE)
+   RODAPÉ (OBRIGADO DESTACADO COM ESPAÇO LIMPO)
    ========================================================================== */
-.card-thanks-banner {
+.hero-footer {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-top: 2px;
   position: relative;
   text-align: center;
+  padding: 2px 0;
+}
+
+.thanks-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .thanks-text {
   font-family: var(--font-display);
-  font-size: clamp(1.65rem, 6.4vw, 2.2rem);
+  font-size: clamp(2rem, 7.8vw, 2.9rem);
   font-weight: 900;
   color: var(--color-dark-green);
   transform: rotate(-1.5deg);
@@ -363,24 +363,24 @@ html, body {
 
 .doodle-bursts-small span {
   display: block;
-  height: 2.5px;
+  height: 2.8px;
   background-color: var(--color-neon-green);
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
-.doodle-bursts-small.left span:nth-child(1) { width: 12px; transform: rotate(-20deg); }
-.doodle-bursts-small.left span:nth-child(2) { width: 16px; transform: rotate(15deg); }
+.doodle-bursts-small.left span:nth-child(1) { width: 14px; transform: rotate(-20deg); }
+.doodle-bursts-small.left span:nth-child(2) { width: 20px; transform: rotate(15deg); }
 
-.doodle-bursts-small.right span:nth-child(1) { width: 16px; transform: rotate(-15deg); }
-.doodle-bursts-small.right span:nth-child(2) { width: 12px; transform: rotate(20deg); }
+.doodle-bursts-small.right span:nth-child(1) { width: 20px; transform: rotate(-15deg); }
+.doodle-bursts-small.right span:nth-child(2) { width: 14px; transform: rotate(20deg); }
 
 .admin-discreet-link {
   position: absolute;
   left: 0;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   opacity: 0.25;
   text-decoration: none;
-  padding: 4px;
+  padding: 6px;
 }
 
 .admin-discreet-link:hover {
@@ -392,10 +392,10 @@ html, body {
    ========================================================================== */
 .floating-chat-container {
   position: fixed;
-  bottom: 10px;
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 24px);
+  width: calc(100% - 28px);
   max-width: 420px;
   z-index: 95;
   display: flex;
@@ -411,10 +411,10 @@ html, body {
   background-color: var(--color-dark-green);
   color: #ffffff;
   border: 2.2px solid var(--color-neon-green);
-  padding: 10px 16px;
+  padding: 11px 18px;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(12, 29, 19, 0.45);
+  box-shadow: 0 10px 28px rgba(12, 29, 19, 0.45);
   position: relative;
   transition: var(--transition-smooth);
 }
@@ -422,13 +422,13 @@ html, body {
 .floating-chat-pill:hover {
   transform: scale(1.02) translateY(-2px);
   background-color: var(--color-deep-forest);
-  box-shadow: 0 12px 30px rgba(56, 229, 77, 0.35);
+  box-shadow: 0 14px 35px rgba(56, 229, 77, 0.4);
 }
 
 .floating-unread-badge {
   position: absolute;
   top: -10px;
-  right: 16px;
+  right: 18px;
   background: #ef4444;
   color: #ffffff;
   min-width: 22px;
@@ -437,7 +437,7 @@ html, body {
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   border: 2px solid #ffffff;
   display: flex;
   align-items: center;
@@ -451,14 +451,14 @@ html, body {
 }
 
 .floating-fab-icon {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
 }
 
 .floating-fab-text {
   flex: 1;
   text-align: left;
   font-family: var(--font-display);
-  font-size: 0.94rem;
+  font-size: 0.98rem;
   font-weight: 800;
   letter-spacing: -0.2px;
   color: #ffffff;
@@ -468,11 +468,11 @@ html, body {
   background-color: var(--color-neon-green);
   color: var(--color-dark-green);
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
   animation: pulseHint 1.8s infinite;
@@ -488,30 +488,8 @@ html, body {
   50% { transform: scale(1.08); box-shadow: 0 0 10px var(--color-neon-green); }
 }
 
-.floating-fab-icon {
-  font-size: 1.55rem;
-}
-
-.floating-fab-status {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 12px;
-  height: 12px;
-  background-color: var(--color-neon-green);
-  border: 2px solid var(--color-dark-green);
-  border-radius: 50%;
-  animation: pulseNeon 2s infinite ease-in-out;
-}
-
-@keyframes pulseNeon {
-  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(56, 229, 77, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(56, 229, 77, 0); }
-  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(56, 229, 77, 0); }
-}
-
 /* ==========================================================================
-   DRAWER / MODAL DE CHAT
+   MODAL / DRAWER DO CHAT DESLIZANTE
    ========================================================================== */
 .chat-drawer-backdrop {
   position: fixed;
@@ -537,7 +515,7 @@ html, body {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
 }
 
-/* Mobile: Drawer vindo de baixo com boa altura */
+/* Mobile: Drawer vindo de baixo */
 @media (max-width: 639px) {
   .chat-drawer {
     bottom: 0;
