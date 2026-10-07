@@ -81,14 +81,15 @@ html, body {
 .page-container {
   position: relative;
   z-index: 2;
-  max-width: 480px;
-  min-height: 100dvh;
+  max-width: 460px;
+  height: 100svh;
+  max-height: 100svh;
   margin: 0 auto;
-  padding: 16px 16px 90px;
+  padding: 8px 14px 68px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -98,8 +99,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 8px;
+  margin-top: 2px;
   text-align: center;
 }
 
@@ -122,25 +123,25 @@ html, body {
 }
 
 .title-top {
-  font-size: clamp(1.45rem, 5.8vw, 2.1rem);
+  font-size: clamp(1.2rem, 4.4vw, 1.65rem);
   transform: rotate(-1deg);
 }
 
 .brush-badge {
   background-color: var(--color-neon-green);
   color: #ffffff;
-  padding: 4px 22px 6px;
-  margin: 3px 0;
+  padding: 2px 18px 4px;
+  margin: 2px 0;
   border-radius: var(--radius-pill);
-  font-size: clamp(1.65rem, 6.8vw, 2.5rem);
+  font-size: clamp(1.35rem, 5.2vw, 2.0rem);
   transform: rotate(-2deg);
   display: inline-block;
-  box-shadow: 0 6px 18px rgba(56, 229, 77, 0.45);
-  text-shadow: 2px 2px 0px rgba(12, 29, 19, 0.45);
+  box-shadow: 0 4px 14px rgba(56, 229, 77, 0.45);
+  text-shadow: 1.5px 1.5px 0px rgba(12, 29, 19, 0.45);
 }
 
 .title-bottom {
-  font-size: clamp(1.75rem, 7.2vw, 2.6rem);
+  font-size: clamp(1.4rem, 5.4vw, 2.1rem);
   transform: rotate(1deg);
 }
 
@@ -172,24 +173,24 @@ html, body {
    ========================================================================== */
 .flyer-card {
   background: var(--color-card-bg);
-  border: 2px solid var(--color-border);
+  border: 1.8px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 16px 16px 18px;
+  padding: 12px 14px 10px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
 }
 
 .flyer-content-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .book-box {
-  width: 120px;
-  min-width: 120px;
+  width: 105px;
+  min-width: 105px;
   display: flex;
   justify-content: center;
 }
@@ -197,10 +198,10 @@ html, body {
 .book-img {
   width: 100%;
   height: auto;
-  max-height: 155px;
+  max-height: 130px;
   object-fit: contain;
-  border-radius: 6px;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.28));
+  border-radius: 5px;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.26));
   display: block;
 }
 
@@ -208,16 +209,16 @@ html, body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 5px;
 }
 
 .info-pill-item {
   display: flex;
   flex-direction: column;
   background: #fbfdfb;
-  border: 1.5px solid #e5ebe4;
-  border-radius: var(--radius-md);
-  padding: 6px 10px;
+  border: 1.2px solid #e5ebe4;
+  border-radius: 8px;
+  padding: 3px 7px;
 }
 
 .pill-tag {
@@ -225,81 +226,85 @@ html, body {
   background-color: var(--color-neon-green);
   color: var(--color-dark-green);
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   font-weight: 900;
   text-transform: uppercase;
-  padding: 2px 7px;
+  padding: 1px 5px;
   border-radius: var(--radius-pill);
   line-height: 1.1;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
 .pill-title {
-  font-size: 0.98rem;
+  font-size: 0.86rem;
   font-weight: 800;
   color: var(--color-dark-green);
-  line-height: 1.25;
-  margin-top: 3px;
+  line-height: 1.2;
+  margin-top: 1px;
 }
 
 .person-name {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 900;
 }
 
 .address-text {
-  font-size: 1.02rem;
+  font-size: 0.90rem;
   font-weight: 800;
   color: var(--color-dark-green);
 }
 
 .contact-prompt-wrap {
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .contact-prompt {
   font-family: var(--font-display);
-  font-size: 1.12rem;
+  font-size: 0.96rem;
   font-weight: 900;
   color: var(--color-dark-green);
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .doodle-underline {
-  height: 4px;
+  height: 3px;
   background: var(--color-neon-green);
-  border-radius: 4px;
+  border-radius: 3px;
   width: 95%;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 /* Botão do Instagram */
 .instagram-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
   color: #ffffff;
   text-decoration: none;
   border-radius: var(--radius-md);
-  padding: 12px 14px;
-  box-shadow: 0 5px 16px rgba(225, 48, 108, 0.3);
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.25);
   transition: var(--transition-smooth);
 }
 
 .instagram-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(225, 48, 108, 0.4);
+  transform: translateY(-1px);
 }
 
 .insta-icon-circle {
   background: rgba(255, 255, 255, 0.22);
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.insta-icon-circle svg {
+  width: 17px;
+  height: 17px;
 }
 
 .insta-info {
@@ -309,74 +314,73 @@ html, body {
 }
 
 .insta-sub {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   opacity: 0.92;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 .insta-username {
-  font-size: 0.98rem;
+  font-size: 0.86rem;
   font-weight: 900;
   line-height: 1.1;
 }
 
 .insta-arrow {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 900;
 }
 
 /* ==========================================================================
-   RODAPÉ (OBRIGADO CENTRALIZADO E COM DESTAQUE)
+   AGRADECIMENTO INTEGRADO NO CARD (100% VISÍVEL NO MOBILE)
    ========================================================================== */
-.hero-footer {
-  margin: 10px 0 6px;
+.card-thanks-banner {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+  margin-top: 2px;
   position: relative;
   text-align: center;
 }
 
-.thanks-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .thanks-text {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 8.5vw, 3.1rem);
+  font-size: clamp(1.65rem, 6.4vw, 2.2rem);
   font-weight: 900;
   color: var(--color-dark-green);
   transform: rotate(-1.5deg);
   letter-spacing: -0.5px;
+  line-height: 1;
 }
 
 .doodle-bursts-small {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .doodle-bursts-small span {
   display: block;
-  height: 3px;
+  height: 2.5px;
   background-color: var(--color-neon-green);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
-.doodle-bursts-small span:nth-child(1) { width: 14px; transform: rotate(-20deg); }
-.doodle-bursts-small span:nth-child(2) { width: 20px; transform: rotate(15deg); }
+.doodle-bursts-small.left span:nth-child(1) { width: 12px; transform: rotate(-20deg); }
+.doodle-bursts-small.left span:nth-child(2) { width: 16px; transform: rotate(15deg); }
+
+.doodle-bursts-small.right span:nth-child(1) { width: 16px; transform: rotate(-15deg); }
+.doodle-bursts-small.right span:nth-child(2) { width: 12px; transform: rotate(20deg); }
 
 .admin-discreet-link {
   position: absolute;
   left: 0;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   opacity: 0.25;
   text-decoration: none;
-  padding: 6px;
+  padding: 4px;
 }
 
 .admin-discreet-link:hover {
@@ -388,11 +392,11 @@ html, body {
    ========================================================================== */
 .floating-chat-container {
   position: fixed;
-  bottom: 16px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 440px;
+  width: calc(100% - 24px);
+  max-width: 420px;
   z-index: 95;
   display: flex;
   justify-content: center;
@@ -403,14 +407,14 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   background-color: var(--color-dark-green);
   color: #ffffff;
-  border: 2.5px solid var(--color-neon-green);
-  padding: 12px 18px;
+  border: 2.2px solid var(--color-neon-green);
+  padding: 10px 16px;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(12, 29, 19, 0.45);
+  box-shadow: 0 8px 24px rgba(12, 29, 19, 0.45);
   position: relative;
   transition: var(--transition-smooth);
 }
@@ -418,22 +422,22 @@ html, body {
 .floating-chat-pill:hover {
   transform: scale(1.02) translateY(-2px);
   background-color: var(--color-deep-forest);
-  box-shadow: 0 14px 35px rgba(56, 229, 77, 0.4);
+  box-shadow: 0 12px 30px rgba(56, 229, 77, 0.35);
 }
 
 .floating-unread-badge {
   position: absolute;
-  top: -11px;
-  right: 18px;
+  top: -10px;
+  right: 16px;
   background: #ef4444;
   color: #ffffff;
   min-width: 22px;
   height: 22px;
-  padding: 0 5px;
+  padding: 0 4px;
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   border: 2px solid #ffffff;
   display: flex;
   align-items: center;
@@ -447,14 +451,14 @@ html, body {
 }
 
 .floating-fab-icon {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
 }
 
 .floating-fab-text {
   flex: 1;
   text-align: left;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.94rem;
   font-weight: 800;
   letter-spacing: -0.2px;
   color: #ffffff;
@@ -464,11 +468,11 @@ html, body {
   background-color: var(--color-neon-green);
   color: var(--color-dark-green);
   font-family: var(--font-display);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
   animation: pulseHint 1.8s infinite;
